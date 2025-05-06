@@ -1,0 +1,20 @@
+{
+  "name": "silevester/php-api-project",
+  "description": "Raw PHP API project skeleton",
+  "type": "project",
+  "require": {
+    "vlucas/phpdotenv": "^5.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/",
+      "Core\\": "core/"
+    }
+  },
+  "authors": [
+    {
+      "name": "SilverD3",
+      "email": "mrboornesilver@gmail.com"
+    }
+  ]
+}
