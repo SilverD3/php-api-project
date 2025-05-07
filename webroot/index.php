@@ -40,41 +40,53 @@ $globalMiddlewares = [
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = str_replace('/webroot', '', $uri);
 
-$uri = str_replace('/public', '', $uri);
+// Check if the request is for a static file
+$path = __DIR__ . $uri;
+
+// Allow static files from /webroot
+if (php_sapi_name() === 'cli-server' && is_file($path)) {
+    return false; // Let the built-in PHP dev server serve the static file
+}
 
 $routeFound = false;
 
 foreach ($routes as $route) {
-    if ($route['method'] === $method && preg_match($route['pattern'], $uri, $matches)) {
-        array_shift($matches);
+    if ($route['method'] === $method) {
+        $pattern = preg_replace('#\{[^/]+\}#', '([^/]+)', $route["pattern"]);
+        $pattern = "#^$pattern$#";
 
-        [$controllerClass, $methodName] = $route['handler'];
-        $controller = \Core\DependencyContainer::get($controllerClass);
+        if (preg_match($pattern, $uri, $matches)) {
+            array_shift($matches);
 
-        $routeMiddlewares = $route['middlewares'] ?? [];
+            [$controllerClass, $methodName] = $route['handler'];
+            $controller = \Core\DependencyContainer::get($controllerClass);
 
-        // Merge global + route middlewares
-        $middlewares = array_merge($globalMiddlewares, $routeMiddlewares);
+            $routeMiddlewares = $route['middlewares'] ?? [];
 
-        // Build middleware chain
-        $action = function () use ($controller, $methodName, $matches) {
-            call_user_func_array([$controller, $methodName], $matches);
-        };
+            // Merge global + route middlewares
+            $middlewares = array_merge($globalMiddlewares, $routeMiddlewares);
 
-        foreach (array_reverse($middlewares) as $middlewareClass) {
-            $middleware = \Core\DependencyContainer::get($middlewareClass);
-            $next = $action;
-            $action = function () use ($middleware, $next) {
-                $middleware->handle($next);
+            // Build middleware chain
+            $action = function () use ($controller, $methodName, $matches) {
+                call_user_func_array([$controller, $methodName], $matches);
             };
+
+            foreach (array_reverse($middlewares) as $middlewareClass) {
+                $middleware = \Core\DependencyContainer::get($middlewareClass);
+                $next = $action;
+                $action = function () use ($middleware, $next) {
+                    $middleware->handle($next);
+                };
+            }
+
+            // Execute the middleware chain
+            $action();
+
+            $routeFound = true;
+            break;
         }
-
-        // Execute the middleware chain
-        $action();
-
-        $routeFound = true;
-        break;
     }
 }
 

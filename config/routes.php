@@ -15,20 +15,44 @@ use App\Controller\ExampleController;
 $routes = [
     [
         'method' => 'GET',
-        'pattern' => '#^/api/example$#',
+        'pattern' => '/',
         'handler' => [ExampleController::class, 'index'],
         'middlewares' => [],
     ],
     [
         'method' => 'GET',
-        'pattern' => '#^/api/example/index$#',
+        'pattern' => '/api/example',
         'handler' => [ExampleController::class, 'index'],
         'middlewares' => [],
     ],
     [
+        'method' => 'POST',
+        'pattern' => '/api/example',
+        'handler' => [ExampleController::class, 'create'],
+        'middlewares' => [],
+    ],
+    [
+        'method' => 'PUT',
+        'pattern' => '/api/example/{id}',
+        'handler' => [ExampleController::class, 'update'],
+        'middlewares' => [],
+    ],
+    [
+        'method' => 'DELETE',
+        'pattern' => '/api/example/{id}',
+        'handler' => [ExampleController::class, 'delete'],
+        'middlewares' => [],
+    ],
+    [
         'method' => 'GET',
-        'pattern' => '#^/$#',
-        'handler' => [ExampleController::class, 'index'],
+        'pattern' => '/api/example/{id}',
+        'handler' => [ExampleController::class, 'getById'],
+        'middlewares' => [],
+    ],
+    [
+        'method' => 'GET',
+        'pattern' => '/api/example/{param1}/{param2}',
+        'handler' => [ExampleController::class, 'getParams'],
         'middlewares' => [],
     ],
 ];
