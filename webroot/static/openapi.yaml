@@ -1,0 +1,142 @@
+openapi: 3.1.0
+info:
+  title: Raw PHP API
+  version: 1.0.0
+  description: A simple API skeleton fro raw PHP development.
+
+servers:
+  - url: http://localhost:8091
+
+paths:
+  /api/example:
+    get:
+      summary: Example GET endpoint
+      responses:
+        '200':
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDTO'
+    post:
+      summary: Example POST endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExampleDTO'
+      responses:
+        '201':
+          description: Data created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExampleDTO'
+
+  /api/example/{param1}/{param2}:
+    get:
+      summary: Example GET endpoint with path parameters
+      parameters:
+        - in: path
+          name: param1
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: param2
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDTO'
+
+  /api/example/{id}:
+    get:
+      summary: Example GET endpoint with ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Data retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExampleDTO'
+        '404':
+          description: Data not found
+    put:
+      summary: Example PUT endpoint with ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExampleDTO'
+      responses:
+        '200':
+          description: Data updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExampleDTO'
+        '404':
+          description: Data not found
+    delete:
+      summary: Example DELETE endpoint with ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Data deleted
+        '404':
+          description: Data not found
+
+components:
+  schemas:
+    ResponseDTO:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: string
+          example: "Operation completed successfully"
+        data:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    ExampleDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          example: "john.doe@company.com"
